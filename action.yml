@@ -1,0 +1,66 @@
+name: 'QSR Crypto Gate'
+description: 'Bloqueia o merge quando o repositorio usa criptografia vulneravel a computador quantico, com recibo selado em SHA3-256.'
+author: 'Serena Quantum Solutions'
+branding:
+  icon: 'shield'
+  color: 'purple'
+
+inputs:
+  path:
+    description: 'Caminho a varrer (relativo a raiz do repositorio).'
+    required: false
+    default: '.'
+  crqc-year:
+    description: 'Ano hipotetico do computador quantico relevante (janela Z do criterio de Mosca).'
+    required: false
+    default: '2035'
+  migration-years:
+    description: 'Anos estimados para migrar um ativo (X do criterio de Mosca).'
+    required: false
+    default: '3'
+  secrecy-years:
+    description: 'Anos que o dado precisa permanecer secreto (Y do criterio de Mosca).'
+    required: false
+    default: '10'
+  fail-on:
+    description: 'Quando falhar: "vulnerable" (veredito 0), "not-ready" (0 ou REFUSED) ou "never".'
+    required: false
+    default: 'not-ready'
+  annotate:
+    description: 'Publicar anotacoes por arquivo e linha no pull request.'
+    required: false
+    default: 'true'
+  receipt-path:
+    description: 'Onde gravar o recibo selado.'
+    required: false
+    default: 'qsr-receipt.json'
+
+outputs:
+  verdict:
+    description: 'Veredito final: 1, 0 ou REFUSED.'
+    value: ${{ steps.gate.outputs.verdict }}
+  findings:
+    description: 'Numero de achados criptograficos.'
+    value: ${{ steps.gate.outputs.findings }}
+  seal:
+    description: 'Selo SHA3-256 do recibo.'
+    value: ${{ steps.gate.outputs.seal }}
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Instalar o motor QSR
+      shell: bash
+      run: python -m pip install --quiet "git+https://github.com/SerenaSolutions/serena-quantum-safe-readiness@main"
+    - id: gate
+      name: Avaliar prontidao pos-quantica
+      shell: bash
+      env:
+        INPUT_PATH: ${{ inputs.path }}
+        INPUT_CRQC_YEAR: ${{ inputs.crqc-year }}
+        INPUT_MIGRATION_YEARS: ${{ inputs.migration-years }}
+        INPUT_SECRECY_YEARS: ${{ inputs.secrecy-years }}
+        INPUT_FAIL_ON: ${{ inputs.fail-on }}
+        INPUT_ANNOTATE: ${{ inputs.annotate }}
+        INPUT_RECEIPT_PATH: ${{ inputs.receipt-path }}
+      run: python "${{ github.action_path }}/gate.py"

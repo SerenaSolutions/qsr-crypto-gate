@@ -1,0 +1,17 @@
+name: prontidão pós-quântica
+on: [pull_request]
+jobs:
+  qsr:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: SerenaSolutions/qsr-crypto-gate@v1
+        with:
+          path: '.'
+          crqc-year: '2035'
+          fail-on: 'not-ready'
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: qsr-receipt
+          path: qsr-receipt.json

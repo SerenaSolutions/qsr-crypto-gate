@@ -16,6 +16,16 @@ Não é atestado de conformidade. É evidência de prontidão, com o limite escr
 
 Falta de evidência vira `REFUSED`, nunca aprovação silenciosa.
 
+Duas famílias de achado, com regras diferentes:
+
+1. RSA e ECC: dependem do tempo, então passam pelo critério de Mosca (migração mais
+   sigilo contra a janela até o computador quântico).
+2. Hash fraco, protocolo TLS obsoleto e chave privada versionada: quebrados ou
+   expostos hoje, sem depender de computador quântico. Reprovam direto, sem janela.
+
+Até 21/11/2026 a segunda família só aparecia anotada, e o repositório era aprovado.
+O caso está travado por teste em `tests/test_gate.py`.
+
 ## Uso
 
 ```yaml

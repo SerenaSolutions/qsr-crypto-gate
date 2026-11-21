@@ -1,0 +1,21 @@
+name: Testes
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  testes:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Instalar o motor QSR e o pytest
+        run: |
+          python -m pip install --quiet --upgrade pip
+          python -m pip install --quiet "git+https://github.com/SerenaSolutions/serena-quantum-safe-readiness@main"
+          python -m pip install --quiet pytest
+      - name: Rodar a suite
+        run: python -m pytest -q tests/
